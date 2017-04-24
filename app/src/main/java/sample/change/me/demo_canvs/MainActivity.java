@@ -100,26 +100,31 @@ public class MainActivity extends Activity {
             tmpPaint.setStyle(Paint.Style.FILL);
             tmpPaint.setColor(Color.YELLOW);
             canvas.drawCircle(0, 0, 5, tmpPaint);
-            paint.setColor(Color.RED);
+            tmpPaint.setColor(Color.RED);
+            //设置画笔宽度
+            tmpPaint.setStrokeWidth(6);
             canvas.rotate(-30,0f,0f); //调整时针
             //绘制时针
             canvas.rotate((float) ((360/12/5*(hour+minus/12.0))%360),0f,0f);
-            canvas.drawLine(0, -10, 0, 45, paint);
+            canvas.drawLine(0, -10, 0, 45, tmpPaint);
 
             canvas.restore();//回到初始状态
             canvas.rotate(25*360/12/5,0f,0f); //调整分针
-            paint.setColor(Color.GREEN);
+            tmpPaint.setColor(Color.GREEN);
+            //设置画笔宽度
+            tmpPaint.setStrokeWidth(3);
             //绘制分针
             canvas.rotate((float) ((360/12/5*minus)%360),0f,0f);
-            canvas.drawLine(0, 10, 0, -65, paint);
+            canvas.drawLine(0, 10, 0, -65, tmpPaint);
 
             canvas.restore();//回到初始状态
             canvas.rotate(-30,0f,0f); //调整秒针
             //绘制秒针
-            paint.setColor(Color.BLUE);
+            tmpPaint.setColor(Color.BLUE);
+            //设置画笔宽度
+            tmpPaint.setStrokeWidth(1);
             canvas.rotate((float) ((360/12/5*second)%360),0f,0f); //旋转画纸,没秒旋转360/12/5度
-            canvas.drawLine(0, -10, 0, 85, paint);
-            paint.setColor(Color.WHITE);
+            canvas.drawLine(0, -10, 0, 85, tmpPaint);
             canvas.rotate(360/12/5);
             if(second==60){
                 second=second%60;

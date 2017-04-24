@@ -5,8 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -57,42 +55,48 @@ public class MainActivity extends Activity {
             canvas.drawColor(Color.rgb(122,65,255));
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.STROKE);
-            canvas.translate(canvas.getWidth()/2, canvas.getHeight()/2); //将位置移动画纸的坐标点:150,150
+            canvas.translate(canvas.getWidth()/2, canvas.getHeight()/2); //将画布移动到屏幕中心
             canvas.drawCircle(0, 0, 100, paint); //画圆圈
-
             //使用path绘制路径文字
-            canvas.save();
-            //向x左平移75，y上平移75
-            canvas.translate(-75, -75);
-            Path path = new Path();
-            //画弧形，从-180的位置开始，到180度
-            path.addArc(new RectF(0,0,150,150), -180, 180);
-            Paint citePaint = new Paint(paint);
-            //设置画笔文本字体大小
-            citePaint.setTextSize(14);
-            //设置画笔宽度
-            citePaint.setStrokeWidth(1);
-            //在左边偏离14
-            //canvas.drawTextOnPath("http://www.wjb820728252a.com", path, 14, 0, citePaint);
-            //回复画布位置
-            canvas.restore();
+//            canvas.save();
+//            //向x左平移75，y上平移75
+//            canvas.translate(-75, -75);
+//            Path path = new Path();
+//            //画弧形，从-180的位置开始，到180度
+//            path.addArc(new RectF(0,0,150,150), -180, 180);
+//            Paint citePaint = new Paint(paint);
+//            //设置画笔文本字体大小
+//            citePaint.setTextSize(14);
+//            //设置画笔宽度
+//            citePaint.setStrokeWidth(1);
+//            //在左边偏离14
+//            //canvas.drawTextOnPath("http://www.wjb820728252a.com", path, 14, 0, citePaint);
+//            //回复画布位置
+//            canvas.restore();
             Paint tmpPaint = new Paint(paint); //小刻度画笔对象
-            tmpPaint.setStrokeWidth(1);
-            float  y=100;
+            tmpPaint.setStrokeWidth(1);//设置画笔笔尖的粗细
+            float  y=100;   //向Y方向移动画笔的位置
             int count = 60; //总刻度数
-            canvas.rotate(180+360/12,0f,0f); //旋转画纸
+            //时针把360度分为12份
+            //分针把360度分为12*5份
+            //秒针把360度分为12*5份
+            //把360分为60份，每6度一个刻度，始终它们都是一个一个刻度走的
+            canvas.rotate(180+360/12,0f,0f); //旋转画纸，使1到12的刻度按钟表习惯写在上面。
             for(int i=0 ; i <count ; i++){
                 if(i%5 == 0){
+                    //60份里面5的倍数就是1-12，所以比其他刻度画得长一点，y加减控制刻度长度
                     canvas.drawLine(0f, y, 0, y+12f, paint);
+                    //把1-12数字写在钟表相应位置上
                     canvas.drawText(String.valueOf(i/5+1), -4f, y+25f, tmpPaint);
                 }else{
                     canvas.drawLine(0f, y, 0f, y +5f, tmpPaint);
                 }
+                //每一个循环就旋转一个刻度，可以想象一下就是笔不动，下面的纸旋转，那么下一次画的位置就发生改变了
                 canvas.rotate(360/count,0f,0f); //旋转画纸
             }
-            canvas.save();
-            canvas.save();//各个状态最初
-            //绘制指针
+            canvas.save();//保存之前的状态，是下次第二个canvas.restore()返回点
+            canvas.save();//各个状态最初，是下次第一个canvas.restore()返回点
+            //绘制钟表的中心点
             tmpPaint.setColor(Color.GRAY);
             //设置画笔宽度
             tmpPaint.setStrokeWidth(4);
@@ -100,6 +104,7 @@ public class MainActivity extends Activity {
             tmpPaint.setStyle(Paint.Style.FILL);
             tmpPaint.setColor(Color.YELLOW);
             canvas.drawCircle(0, 0, 5, tmpPaint);
+
             tmpPaint.setColor(Color.RED);
             //设置画笔宽度
             tmpPaint.setStrokeWidth(6);
@@ -108,7 +113,7 @@ public class MainActivity extends Activity {
             canvas.rotate((float) ((360/12/5*(hour+minus/12.0))%360),0f,0f);
             canvas.drawLine(0, -10, 0, 45, tmpPaint);
 
-            canvas.restore();//回到初始状态
+            canvas.restore();//第一个canvas.restore()回到初始状态,使得分针不受时针影响
             canvas.rotate(25*360/12/5,0f,0f); //调整分针
             tmpPaint.setColor(Color.GREEN);
             //设置画笔宽度
@@ -117,7 +122,7 @@ public class MainActivity extends Activity {
             canvas.rotate((float) ((360/12/5*minus)%360),0f,0f);
             canvas.drawLine(0, 10, 0, -65, tmpPaint);
 
-            canvas.restore();//回到初始状态
+            canvas.restore();//第二个canvas.restore()回到初始状态,使得秒针不受分针，时针影响
             canvas.rotate(-30,0f,0f); //调整秒针
             //绘制秒针
             tmpPaint.setColor(Color.BLUE);
@@ -126,6 +131,7 @@ public class MainActivity extends Activity {
             canvas.rotate((float) ((360/12/5*second)%360),0f,0f); //旋转画纸,没秒旋转360/12/5度
             canvas.drawLine(0, -10, 0, 85, tmpPaint);
             canvas.rotate(360/12/5);
+            //秒针转60次，那么分针转1次，当分针转了60次，那么时针转1次
             if(second==60){
                 second=second%60;
                 minus++;
@@ -137,6 +143,7 @@ public class MainActivity extends Activity {
                 }
             }
             second++;
+            //设置这个是为了避免上面一系列的计算的时间影响
             double endTime=System.currentTimeMillis(); //获取结束时间
             //每隔1秒钟刷新页面
             postInvalidateDelayed((long) (1000-(endTime-startTime)));
